@@ -1,47 +1,230 @@
-<x-guest-layout>
-    <!-- Session Status -->
-    <x-auth-session-status class="mb-4" :status="session('status')" />
+@extends('layouts.myapp')
+<style>
+    /* =========================================================
+   LOGIN BODY
+========================================================= */
 
-    <form method="POST" action="{{ route('login') }}">
-        @csrf
+    .login-body {
+        height: 100%;
+        width: 100%;
 
-        <!-- Email Address -->
-        <div>
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autofocus autocomplete="username" />
-            <x-input-error :messages="$errors->get('email')" class="mt-2" />
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        background: url('https://images.unsplash.com/photo-1496171367470-9ed9a91ea931?q=80&w=1600&auto=format&fit=crop') center/cover no-repeat;
+
+        overflow: hidden;
+        position: relative;
+    }
+
+    /* =========================================================
+   OVERLAY
+========================================================= */
+
+    .login-body::before {
+        content: '';
+
+        position: absolute;
+        inset: 0;
+
+        background: rgba(0, 0, 0, 0.35);
+
+        backdrop-filter: blur(2px);
+    }
+
+    /* =========================================================
+   LOGIN CONTAINER
+========================================================= */
+
+    .login-container {
+        position: relative;
+
+        width: 400px;
+
+        padding: 40px 30px;
+
+        border-radius: 16px;
+
+        background: rgba(255, 255, 255, 0.12);
+
+        backdrop-filter: blur(12px);
+
+        border: 1px solid rgba(255, 255, 255, 0.2);
+
+        box-shadow:
+            0 8px 32px rgba(0, 0, 0, 0.35),
+            inset 0 1px 0 rgba(255, 255, 255, 0.2);
+
+        animation: float 5s ease-in-out infinite;
+    }
+
+    /* FLOAT ANIMATION */
+    @keyframes float {
+
+        0% {
+            transform: translateY(0px);
+        }
+
+        50% {
+            transform: translateY(-10px);
+        }
+
+        100% {
+            transform: translateY(0px);
+        }
+    }
+
+    /* =========================================================
+   TITLE
+========================================================= */
+
+    .login-container h1 {
+        text-align: center;
+
+        margin-bottom: 30px;
+
+        color: #000;
+
+        font-size: 42px;
+        font-weight: bold;
+    }
+
+    /* =========================================================
+   INPUTS
+========================================================= */
+
+    .input-group {
+        margin-bottom: 18px;
+    }
+
+    .input-group input {
+        width: 100%;
+
+        padding: 15px;
+
+        border: none;
+        outline: none;
+
+        border-radius: 6px;
+
+        background: #fff;
+
+        font-size: 16px;
+
+        transition: 0.3s;
+    }
+
+    .input-group input:focus {
+        transform: scale(1.02);
+
+        box-shadow: 0 0 15px rgba(162, 12, 227, 0.7);
+    }
+
+    /* =========================================================
+   BUTTON
+========================================================= */
+
+    .login-btn {
+        width: 100%;
+
+        padding: 15px;
+
+        border: none;
+        border-radius: 6px;
+
+        background: rgba(162, 12, 227, 0.7);
+
+        color: #fff;
+
+        font-size: 20px;
+        font-weight: bold;
+
+        cursor: pointer;
+
+        transition: 0.3s;
+    }
+
+    .login-btn:hover {
+        background: #b139bc;
+
+        transform: translateY(-2px);
+
+        box-shadow: 0 8px 20px rgba(34, 12, 74, 0.45);
+    }
+
+    /* =========================================================
+   LINKS
+========================================================= */
+
+    .links {
+        margin-top: 22px;
+
+        text-align: center;
+    }
+
+    .links a {
+        display: block;
+
+        color: rgba(162, 12, 227, 0.7);
+
+        margin: 14px 0;
+
+        font-size: 17px;
+
+        transition: 0.3s;
+    }
+
+    .links a:hover {
+        color: #ffffff;
+
+        text-shadow: 0 0 12px rgba(162, 12, 227, 0.7);
+    }
+
+    /* =========================================================
+   RESPONSIVE
+========================================================= */
+
+    @media(max-width:480px) {
+
+        .login-container {
+            width: 90%;
+            padding: 30px 20px;
+        }
+
+        .login-container h1 {
+            font-size: 34px;
+        }
+    }
+</style>
+<main class='login-body'>
+    <div class="login-container">
+
+        <h1>connexion</h1>
+
+        <form method="POST" action="{{ route('login') }}">
+            @csrf
+
+            <div class="input-group">
+                <input type="text" name="email" :value="old('email')" required autofocus autocomplete="username" placeholder="Username or email">
+                <x-input-error :messages="$errors->get('email')" class="mt-2" />
+            </div>
+
+            <div class="input-group">
+                <input type="password" name="password" required autocomplete="current-password" placeholder="Password">
+                <x-input-error :messages="$errors->get('password')" class="mt-2" />
+            </div>
+
+            <button type="submit" class="login-btn">
+                Login
+            </button>
+
+        </form>
+
+        <div class="links">
+            <a href="{{ route('password.request') }}">Mot de passe Oublié?</a>
+            <a href="{{ route('register') }}">Pas de compte? Inscrivez-vous</a>
         </div>
 
-        <!-- Password -->
-        <div class="mt-4">
-            <x-input-label for="password" :value="__('Password')" />
-
-            <x-text-input id="password" class="block mt-1 w-full"
-                            type="password"
-                            name="password"
-                            required autocomplete="current-password" />
-
-            <x-input-error :messages="$errors->get('password')" class="mt-2" />
-        </div>
-
-        <!-- Remember Me -->
-        <div class="block mt-4">
-            <label for="remember_me" class="inline-flex items-center">
-                <input id="remember_me" type="checkbox" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500" name="remember">
-                <span class="ms-2 text-sm text-gray-600">{{ __('Remember me') }}</span>
-            </label>
-        </div>
-
-        <div class="flex items-center justify-end mt-4">
-            @if (Route::has('password.request'))
-                <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="{{ route('password.request') }}">
-                    {{ __('Forgot your password?') }}
-                </a>
-            @endif
-
-            <x-primary-button class="ms-3">
-                {{ __('Log in') }}
-            </x-primary-button>
-        </div>
-    </form>
-</x-guest-layout>
+    </div>
+</main>

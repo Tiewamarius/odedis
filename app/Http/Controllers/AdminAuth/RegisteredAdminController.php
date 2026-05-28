@@ -1,10 +1,9 @@
 <?php
 
-namespace App\Http\Controllers\Auth;
+namespace App\Http\Controllers\AdminAuth;
 
 use App\Http\Controllers\Controller;
-use App\Models\User;
-use App\Models\review;
+use App\Models\Admin;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -13,15 +12,14 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
 use Illuminate\View\View;
 
-class RegisteredUserController extends Controller
+class RegisteredAdminController extends Controller
 {
     /**
      * Display the registration view.
      */
     public function create(): View
-
     {
-        return view('auth.register');
+        return view('adminauth.auth.register');
     }
 
     /**
@@ -32,23 +30,23 @@ class RegisteredUserController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $request->validate([
-            'username' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . User::class],
-            'phone' => ['required', 'string', 'max:20', 'unique:' . User::class],
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . Admin::class],
+            'phone_number' => ['required', 'string', 'max:20', 'unique:' . Admin::class], // Ajout du numéro de téléphone
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
-        $user = User::create([
-            'username' => $request->username,
+        $admin = Admin::create([
+            'name' => $request->name,
             'email' => $request->email,
-            'phone' => $request->phone,
+            'phone_number' => $request->phone_number, // Ajout du numéro de téléphone
             'password' => Hash::make($request->password),
         ]);
 
-        event(new Registered($user));
+        event(new Registered($admin));
 
-        Auth::login($user);
+        Auth::guard('admin')->login($admin);
 
-        return redirect(url('/'));
+        return redirect(url('admin.homes'));
     }
 }

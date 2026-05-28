@@ -1,19 +1,16 @@
 <?php
 
 namespace App\Models;
-
-use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Laravel\Sanctum\HasApiTokens;
-use Illuminate\Database\Eloquent\Collection;
-use App\Models\Favorite;
-
-
-class User extends Authenticatable
+class Admin extends  Authenticatable
 {
-    use  HasFactory, Notifiable;
+  
+    use HasApiTokens, Notifiable;
+
+    protected $guard='admin';
 
     /**
      * The attributes that are mass assignable.
@@ -21,17 +18,15 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
-        'username',
-        'email',
-        'password',
-        'role',
-        'profile_picture',
-        'phone',
-        'address',
-        'description',
-        'id_card',
-        'card_picture',
-    ];
+    'name',
+    'email',
+    'password',
+    'role',          
+    'profile_picture', 
+    'phone_number',
+    'address',       
+    'description',   // NOUVEAU
+];
 
     /**
      * The attributes that should be hidden for serialization.
@@ -58,29 +53,33 @@ class User extends Authenticatable
     /**
      * Un utilisateur peut avoir plusieurs réservations.
      */
-
+    public function bookings()
+    {
+        return $this->hasMany(Booking::class); // Assurez-vous que le modèle Booking existe
+    }
 
     /**
      * Un utilisateur peut avoir plusieurs avis.
      */
     public function reviews()
     {
-        return $this->hasMany(Review::class);
+        return $this->hasMany(Review::class); // Assurez-vous que le modèle Review existe
     }
 
     /**
      * Un utilisateur peut avoir plusieurs favoris (relation polymorphe).
      */
-
-
-
+    public function favorites()
+    {
+        return $this->hasMany(Favorite::class); // Assurez-vous que le modèle Favorite existe
+    }
 
     /**
      * Un utilisateur peut avoir plusieurs messages.
      */
     public function messages()
     {
-        return $this->hasMany(Devis::class);
+        return $this->hasMany(Message::class); // Assurez-vous que le modèle Message existe
     }
 
     // --- Accessors ou autres méthodes utiles ---
@@ -91,8 +90,8 @@ class User extends Authenticatable
         return $this->role === 'admin';
     }
 
-    public function isManager()
+    public function isHotelManager()
     {
-        return $this->role === 'manager';
+        return $this->role === 'hotel_manager';
     }
 }
